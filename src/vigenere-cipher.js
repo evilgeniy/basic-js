@@ -19,14 +19,52 @@ const { NotImplementedError } = require('../extensions/index.js');
  * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
  * 
  */
+
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(direct = true) {
+    this.direct = direct;
+    this.alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(message, key) {
+    return this.directMachineActive(message, key, 1);
+  }
+
+  decrypt(message, key) {
+    return this.directMachineActive(message, key, 0);
+  }
+
+  directMachineActive(message, key, encrypt) {
+
+    if (!message || !key) throw new Error('Incorrect arguments!');
+
+    message = message.toUpperCase();
+    key = key.toUpperCase();
+    let indexKey = 0;
+    let result = '';
+
+    for (let i = 0; i < message.length; i += 1) {
+
+      const charCode = message.charCodeAt(i);
+
+      if (charCode >= 65 && charCode <= 90) {
+        if (encrypt === 1) {
+          result += String.fromCharCode(((charCode + key.charCodeAt(indexKey % key.length)) % 26) + 65);
+        }
+
+        if (encrypt === 0) {
+          result += String.fromCharCode(((charCode - key.charCodeAt(indexKey % key.length) + 26) % 26) + 65);
+        }
+        indexKey += 1;
+      } else {
+        result += message[i];
+      }
+    }
+    if(this.direct) {
+      return result;
+    } else{
+      return result.split('').reverse().join('');
+    }
   }
 }
 
